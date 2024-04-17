@@ -5,7 +5,7 @@ import {Username} from '../object/Username';
 
 export class UpdateUserCredentials {
   public constructor(
-    public readonly id: Identifier<string>,
+    public readonly identifier: Identifier<string>,
     public readonly username = Optional.none<Username>(),
     public readonly accountNumber = Optional.none<InformationNumber<string>>()
   ) {}
