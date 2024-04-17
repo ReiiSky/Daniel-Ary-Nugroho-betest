@@ -8,6 +8,7 @@ import {UserPayload} from './UserPayload';
 export class User extends Entity<string> {
   private constructor(
     id: Identifier<string>,
+    private name: string,
     private email: Email,
     private identityNumber: InformationNumber<string>,
     private accountNumber: Optional<InformationNumber<string>>
@@ -27,6 +28,12 @@ export class User extends Entity<string> {
       .use(num => Optional.some(InformationNumber.new(num)))
       .unwrap(Optional.none());
 
-    return new User(identifier, email, identityNumber, accountNumber);
+    return new User(
+      identifier,
+      payload.username,
+      email,
+      identityNumber,
+      accountNumber
+    );
   }
 }
