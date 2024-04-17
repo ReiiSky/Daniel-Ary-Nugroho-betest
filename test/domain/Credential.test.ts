@@ -1,5 +1,6 @@
 import {Credential} from '../../source/domain/Credential';
 import {RegisterUser, UpdateUserCredentials} from '../../source/domain/event';
+import {DeleteUserCredential} from '../../source/domain/event/DeleteUserCredential';
 import {InformationNumber} from '../../source/domain/object/InfomationNumber';
 import {Username} from '../../source/domain/object/Username';
 import {EmptyValue} from '../../source/package/EmptyValue';
@@ -63,7 +64,22 @@ test('Credential should be able to delete user account number.', () => {
   }
 });
 
-test.todo('Credential should be able to delete valid user.');
+test('Credential should be able to delete user by id.', () => {
+  for (const {userPayload, throwable} of DummyUser.invariantConstructTest) {
+    if (throwable) continue;
+
+    const userID = '507f1f77bcf86cd799439011';
+    const credAggr = Credential.new(userID, userPayload);
+    credAggr.delete();
+
+    expect(credAggr.events.length).toBe(1);
+    expect(credAggr.events[0] instanceof DeleteUserCredential).toBe(true);
+    expect((credAggr.events[0] as DeleteUserCredential).identifier.id).toBe(
+      userID
+    );
+  }
+});
+
 test.todo(
   'Credential will validate invariant on instantiating, when entity count in aggregate more than one including root.'
 );

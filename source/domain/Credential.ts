@@ -71,4 +71,22 @@ export class Credential extends Aggregate {
       )
     );
   }
+
+  public delete() {
+    const containDeleteEvent =
+      this.events.filter(event => event instanceof events.DeleteUserCredential)
+        .length > 0;
+
+    if (containDeleteEvent) {
+      return;
+    }
+
+    const deletable = this.root.ID.id !== EmptyValue.DefaultString;
+
+    if (!deletable) {
+      return;
+    }
+
+    this.addEvent(new events.DeleteUserCredential(this.root.ID));
+  }
 }
