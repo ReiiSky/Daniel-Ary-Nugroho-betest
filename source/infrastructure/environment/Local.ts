@@ -1,4 +1,4 @@
-import { BaseEnv } from "./BaseEnv";
+import {BaseEnv} from './BaseEnv';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 
