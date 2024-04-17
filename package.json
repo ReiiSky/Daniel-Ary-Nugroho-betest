@@ -17,6 +17,7 @@
     "posttest": "npm run lint"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/jest": "^29.5.12",
     "@types/joi": "^17.2.3",
     "@types/node": "^20.4.5",
@@ -36,6 +37,7 @@
     ]
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "joi": "^17.12.3"
   }
 }
