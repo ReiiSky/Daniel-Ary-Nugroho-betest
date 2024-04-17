@@ -1,13 +1,14 @@
 import {Connection} from './Connection';
 import {MongoConfig} from './MongoConfig';
 import {MongoClient, ServerApiVersion} from 'mongodb';
+import {Technames} from './Technames';
 
 export class MongoConnection extends Connection {
   private connected = false;
   private client: MongoClient | undefined;
 
   constructor(private readonly config: MongoConfig) {
-    super('mongo');
+    super(Technames.MONGO);
   }
 
   async connect(): Promise<void> {
