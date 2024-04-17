@@ -8,10 +8,10 @@ import {UserPayload} from './UserPayload';
 export class User extends Entity<string> {
   private constructor(
     id: Identifier<string>,
-    private name: string,
-    private email: Email,
-    private identityNumber: InformationNumber<string>,
-    private accountNumber: Optional<InformationNumber<string>>
+    private _username: string,
+    private _email: Email,
+    private _identityNumber: InformationNumber<string>,
+    private _accountNumber: Optional<InformationNumber<string>>
   ) {
     super(id);
   }
@@ -35,5 +35,9 @@ export class User extends Entity<string> {
       identityNumber,
       accountNumber
     );
+  }
+
+  public equalByEmail(other: string) {
+    return this._email.value === other;
   }
 }

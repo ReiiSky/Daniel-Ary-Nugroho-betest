@@ -6,13 +6,13 @@ export class Email {
     .email()
     .lowercase()
     .required();
-  private constructor(private readonly emailValue: string) {}
+  private constructor(public readonly value: string) {}
 
-  public static new(emailValue: string): Email {
-    const result = Email.validator.validate(emailValue);
+  public static new(value: string): Email {
+    const result = Email.validator.validate(value);
 
     if (result.error) {
-      throw new ConstructError(Email.name, emailValue);
+      throw new ConstructError(Email.name, value);
     }
 
     return new Email(result.value);
