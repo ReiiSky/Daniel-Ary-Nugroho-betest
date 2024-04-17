@@ -1,3 +1,4 @@
+import {EmptyValue} from '../../package/EmptyValue';
 import {ConstructError} from '../context/error/ConstructError';
 import {SNValidator} from './SNValidator';
 
@@ -13,5 +14,17 @@ export class InformationNumber<T = string | number> {
     }
 
     return new InformationNumber(value);
+  }
+
+  public isEmpty() {
+    return this.value === EmptyValue.DefaultString;
+  }
+
+  public clone() {
+    return InformationNumber.new(this.value);
+  }
+
+  public get number() {
+    return this.value;
   }
 }

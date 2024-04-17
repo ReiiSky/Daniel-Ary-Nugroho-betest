@@ -10,11 +10,19 @@ export class Credential extends Aggregate {
   private constructor(
     id: string,
     rootPayload: UserPayload,
-    createdAt: Optional<Date>
+    createdAt = Optional.none<Date>()
   ) {
     super();
 
     this.root = User.new(id, createdAt, rootPayload);
+  }
+
+  public static new(
+    id: string,
+    userPayload: UserPayload,
+    createdAt = Optional.none<Date>()
+  ) {
+    return new Credential(id, userPayload, createdAt);
   }
 
   public static newEmpty(): Credential {
@@ -41,5 +49,26 @@ export class Credential extends Aggregate {
 
   public isRegistered(otherEmail: string) {
     return this.root.equalByEmail(otherEmail);
+  }
+
+  public updateUsername(newUsername: string) {
+    this.root.putUsername(newUsername);
+    this.addEvent(
+      new events.UpdateUserCredentials(
+        this.root.ID,
+        Optional.some(this.root.username)
+      )
+    );
+  }
+
+  public updateAccountNumber(newAccountNumber: Optional<string>) {
+    this.root.putAccountNumber(newAccountNumber);
+    this.addEvent(
+      new events.UpdateUserCredentials(
+        this.root.ID,
+        Optional.none(),
+        this.root.accountNumber
+      )
+    );
   }
 }
