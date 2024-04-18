@@ -1,3 +1,4 @@
+import {EmptyValue} from '../../../package/EmptyValue';
 import {Optional} from '../../../package/monad/Optional';
 
 export abstract class DummyUser {
@@ -25,6 +26,36 @@ export abstract class DummyUser {
         },
       },
       throwable: true,
+    },
+  ];
+
+  public static mongoSpecTest = [
+    {
+      identifier: '6620b6e8d2e041357855e051',
+      username: 'first-user',
+      email: 'first.user123@gmail.com',
+      number: {
+        identity: '3175062002991011',
+        account: Optional.some('92148000200'),
+      },
+    },
+    {
+      identifier: '6620b6e8d2e041357855e05f',
+      username: 'second-user',
+      email: 'second.user456@gmail.com',
+      number: {
+        identity: '3175062002991022',
+        account: Optional.some(EmptyValue.DefaultString),
+      },
+    },
+    {
+      identifier: '6620b6ae60d8f2a1b5836048',
+      username: 'third-user',
+      email: 'third.user456@gmail.com',
+      number: {
+        identity: '3175062002991023',
+        account: Optional.auto(undefined),
+      },
     },
   ];
 }

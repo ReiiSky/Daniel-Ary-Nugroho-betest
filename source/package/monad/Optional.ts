@@ -1,3 +1,5 @@
+import {EmptyValue} from '../EmptyValue';
+
 export class Optional<T> {
   private constructor(private readonly value?: T) {}
 
@@ -16,7 +18,11 @@ export class Optional<T> {
   }
 
   public get isNone() {
-    return this.value === null || this.value === undefined;
+    return (
+      this.value === null ||
+      this.value === undefined ||
+      this.value === EmptyValue.DefaultString
+    );
   }
 
   public use<TReturn>(
@@ -40,6 +46,10 @@ export class Optional<T> {
 
   // unsafe unwrap, use it carefully.
   public forceUnwrap(): T {
+    if (this.value === EmptyValue.DefaultString) {
+      return this.use(num => num).forceUnwrap() as T;
+    }
+
     // TODO: throw new nullpointer exception.
     return this.value as T;
   }

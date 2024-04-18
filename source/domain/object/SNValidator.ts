@@ -18,7 +18,7 @@ export abstract class SNValidator {
     }
   }
 
-  private static validateValue<T>(
+  public static validateValue<T>(
     domainName: string,
     schema: Joi.AnySchema,
     value: T

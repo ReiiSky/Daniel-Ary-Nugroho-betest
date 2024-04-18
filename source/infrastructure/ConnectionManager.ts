@@ -19,6 +19,8 @@ export class ConnectionManager {
     }
 
     // only connect once.
+    // TODO: apply transaction, such as conn.begin().
+    // and commit on no any error occur.
     await conn.connect();
 
     return conn;
