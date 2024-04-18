@@ -58,4 +58,25 @@ export abstract class DummyUser {
       },
     },
   ];
+
+  public static mongoWriteTest = [
+    {
+      identifier: '662131121fea75ea9f8c0f3c',
+      username: 'fourth-user',
+      email: 'fourth.user768@gmail.com',
+      number: {
+        identity: '3175062002978211',
+        account: Optional.some('92148000887'),
+      },
+    },
+    {
+      identifier: '662131191fea75ea9f8c0f3d',
+      username: 'fifth-user',
+      email: 'fifth.user@gmail.com',
+      number: {
+        identity: '3175068952978211',
+        account: Optional.some('92148072887'),
+      },
+    },
+  ];
 }

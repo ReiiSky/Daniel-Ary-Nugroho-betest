@@ -18,12 +18,20 @@ export class ConnectionManager {
       throw new NotImplementedError(`${techname} connection`);
     }
 
-    // only connect once.
-    // TODO: apply transaction, such as conn.begin().
-    // and commit on no any error occur.
     await conn.connect();
 
     return conn;
+  }
+
+  // TODO: Refactor please.
+  public async abortAll() {
+    const promises = this.connections.map(conn => conn.abort());
+    await Promise.all(promises);
+  }
+
+  public async commitAll() {
+    const promises = this.connections.map(conn => conn.commit());
+    await Promise.all(promises);
   }
 
   public async closeAll() {

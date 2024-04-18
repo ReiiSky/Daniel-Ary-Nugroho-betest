@@ -11,5 +11,6 @@ export class InMemoryConnection extends Connection {
 
   async connect(): Promise<void> {}
   async abort(): Promise<void> {}
+  async commit(): Promise<void> {}
   async close(): Promise<void> {}
 }

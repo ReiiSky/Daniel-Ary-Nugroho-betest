@@ -18,6 +18,7 @@ import {MongoGetCredentialByID} from '../../source/infrastructure/repositoryimpl
 import {MongoGetCredentialByEmail} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByEmail';
 import {Optional} from '../../source/package/monad/Optional';
 import {MongoGetCredentialByNumber} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByNumber';
+import {MongoRegisterCredential} from '../../source/infrastructure/repositoryimpl/MongoRegisterCredential';
 
 describe('Use in-memory store in kernel repository', () => {
   const connectionManagerBuilder = new ConnectionManagerBuilder();
@@ -249,7 +250,31 @@ describe('Use MongoDB as a datastore of repository.', () => {
   });
 
   describe('MongoDB Command Repository of Credential.', () => {
-    it.todo('should be able the register credential.');
+    it('should be able the register credential.', async () => {
+      const repositoryRegistrator = new RepositoriesRegistrator().addEvent(
+        new MongoRegisterCredential()
+      );
+
+      const kernel = new Kernel(
+        repositoryRegistrator,
+        connectionManagerBuilder
+      );
+      const context = kernel.newContext();
+      try {
+        for (const userPayload of DummyUser.mongoWriteTest) {
+          const credential = Credential.newEmpty();
+          credential.register(userPayload);
+
+          const results = await context.repositories().save(credential);
+          expect(results.length).toBe(1);
+          expect(results[0].insertedIDText.length).toBe(1);
+          expect(results[0].insertedIDText[0].length).toBe(24);
+        }
+      } finally {
+        await context.close();
+      }
+    });
+
     it.todo('should be able the update credential.');
     it.todo('should be able the delete credential.');
   });

@@ -1,4 +1,4 @@
-import {IEvent} from '../domain/context/IEvent';
+import {IEventImpl} from './IEventImpl';
 import {ISpecificationImpl} from './ISpecificationImpl';
 import {NotValidScopeError} from './error/NotValidScopeError';
 
@@ -9,7 +9,7 @@ export class RepositoriesRegistrator {
   private specificationImpls: Map<string, ISpecificationImpl[]> = new Map();
 
   // [specification name: impls]
-  private eventImpls: IEvent[] = [];
+  private eventImpls: IEventImpl[] = [];
 
   public get specifications() {
     return this.specificationImpls;
@@ -38,7 +38,7 @@ export class RepositoriesRegistrator {
     return this;
   }
 
-  public addEvent(event: IEvent): RepositoriesRegistrator {
+  public addEvent(event: IEventImpl): RepositoriesRegistrator {
     this.eventImpls.push(event);
     return this;
   }

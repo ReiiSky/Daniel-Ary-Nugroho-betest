@@ -44,10 +44,6 @@ export class MongoConnection extends Connection {
   }
 
   async close(): Promise<void> {
-    if (!this.isAborted) {
-      await this._session?.commitTransaction();
-    }
-
     await this.ping();
     await this._session?.endSession();
     await this._client?.close(true);
@@ -56,6 +52,14 @@ export class MongoConnection extends Connection {
   async abort() {
     await this._session?.abortTransaction();
     this.isAborted = true;
+  }
+
+  async commit() {
+    if (this.session.transaction.isCommitted || this.isAborted) {
+      return;
+    }
+
+    await this._session?.commitTransaction();
   }
 
   private async ping() {

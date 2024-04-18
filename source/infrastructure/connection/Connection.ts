@@ -3,5 +3,6 @@ export abstract class Connection {
 
   abstract connect(): Promise<void>;
   abstract abort(): Promise<void>;
+  abstract commit(): Promise<void>;
   abstract close(): Promise<void>;
 }
