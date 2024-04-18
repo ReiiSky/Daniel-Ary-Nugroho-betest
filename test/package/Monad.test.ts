@@ -31,3 +31,6 @@ describe('Optional instead null, to handle variable value.', () => {
     }
   });
 });
+
+// TODO: Either
+describe('Use Either<Right, Left> for storing value, or error possibility', () => {});
