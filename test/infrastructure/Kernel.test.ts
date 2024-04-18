@@ -15,6 +15,7 @@ import {InMemoryGetCredentialByEmail} from '../../source/infrastructure/reposito
 import {EmptyValue} from '../../source/package/EmptyValue';
 import {MongoBase} from '../../source/infrastructure/repositoryimpl/MongoBase';
 import {MongoGetCredentialByID} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByID';
+import {MongoGetCredentialByEmail} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByEmail';
 
 describe('Use in-memory store in kernel repository', () => {
   const connectionManagerBuilder = new ConnectionManagerBuilder();
@@ -92,6 +93,17 @@ describe('Use MongoDB as a datastore of repository.', () => {
       );
 
       await Promise.allSettled(insertPromises);
+      await mongoConnection.db
+        .collection(MongoBase.Cols.USERS)
+        .createIndex({email: 1}, {unique: true});
+
+      await mongoConnection.db
+        .collection(MongoBase.Cols.USERS)
+        .createIndex({'number.identity': 1}, {unique: true});
+
+      await mongoConnection.db
+        .collection(MongoBase.Cols.USERS)
+        .createIndex({'number.account': 1}, {});
     } finally {
       await mongoConnection.close();
     }
@@ -141,7 +153,49 @@ describe('Use MongoDB as a datastore of repository.', () => {
       }
     });
 
-    it.todo('should be able to get one Credential by email.');
+    it('should be able to get one Credential by email.', async () => {
+      const repositoryRegistrator = new RepositoriesRegistrator()
+        .scope(Scope.Credential)
+        .addSpecification(new MongoGetCredentialByEmail());
+
+      const kernel = new Kernel(
+        repositoryRegistrator,
+        connectionManagerBuilder
+      );
+      const context = kernel.newContext();
+
+      try {
+        const tests = [
+          {
+            email: 'not.exist.987@gmail.com',
+            isNonable: true,
+          },
+          {
+            email: DummyUser.mongoSpecTest[0].email,
+            isNonable: false,
+          },
+          {
+            email: DummyUser.mongoSpecTest[1].email,
+            isNonable: false,
+          },
+          {
+            email: DummyUser.mongoSpecTest[2].email,
+            isNonable: false,
+          },
+        ];
+
+        for (const test of tests) {
+          const credential = await context
+            .repositories()
+            .Credential.getOne(new specs.GetByEmail(test.email));
+
+          expect(credential.isNone).toBe(test.isNonable);
+        }
+      } finally {
+        await context.close();
+      }
+    });
+
     it.todo('should be able to get one Credential by accountNumber.');
     it.todo('should be able to get one Credential by identityNumber.');
   });
