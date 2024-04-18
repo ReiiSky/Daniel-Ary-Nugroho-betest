@@ -20,6 +20,7 @@ import {Optional} from '../../source/package/monad/Optional';
 import {MongoGetCredentialByNumber} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByNumber';
 import {MongoRegisterCredential} from '../../source/infrastructure/repositoryimpl/MongoRegisterCredential';
 import {MongoUpdateCredential} from '../../source/infrastructure/repositoryimpl/MongoUpdateCredential';
+import {MongoDeleteCredential} from '../../source/infrastructure/repositoryimpl/MongoDeleteCredential';
 
 describe('Use in-memory store in kernel repository', () => {
   const connectionManagerBuilder = new ConnectionManagerBuilder();
@@ -318,7 +319,35 @@ describe('Use MongoDB as a datastore of repository.', () => {
       }
     });
 
-    it.todo('should be able the delete credential.');
+    it('should be able the delete credential.', async () => {
+      const repositoryRegistrator = new RepositoriesRegistrator()
+        .scope(Scope.Credential)
+        .addSpecification(new MongoGetCredentialByID())
+        .addSpecification(new MongoGetCredentialByEmail())
+        .addEvent(new MongoDeleteCredential());
+
+      const kernel = new Kernel(
+        repositoryRegistrator,
+        connectionManagerBuilder
+      );
+      const context = kernel.newContext();
+
+      for (const userPayload of DummyUser.mongoDeleteTest) {
+        const spec = userPayload.email.isNone
+          ? new specs.GetByIDStr(userPayload.identifier.forceUnwrap())
+          : new specs.GetByEmail(userPayload.email.forceUnwrap());
+
+        const row = await context.repositories().Credential.getOne(spec);
+        expect(row.forceUnwrap()).not.toBeNull();
+
+        const credential = row.forceUnwrap() as Credential;
+        credential.delete();
+
+        const results = await context.repositories().save(credential);
+        expect(results.length).toBe(1);
+        expect(results[0].deletedCount).toBe(1);
+      }
+    });
   });
 
   it.todo('should be able to listen to register domain event.');

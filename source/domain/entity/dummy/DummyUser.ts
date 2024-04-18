@@ -94,4 +94,15 @@ export abstract class DummyUser {
       account: Optional.some('92146510254'),
     },
   ];
+
+  public static mongoDeleteTest = [
+    {
+      identifier: Optional.some('6620b6e8d2e041357855e051'),
+      email: Optional.none<string>(),
+    },
+    {
+      identifier: Optional.none<string>(),
+      email: Optional.some('second.user456@gmail.com'),
+    },
+  ];
 }
