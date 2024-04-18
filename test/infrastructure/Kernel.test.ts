@@ -305,9 +305,13 @@ describe('Use MongoDB as a datastore of repository.', () => {
         const results = await context.repositories().save(credential);
         expect(results.length).toBe(updatedCount);
 
-        userPayload.username.use(() => expect(results[0].modifiedCount).toBe(1));
+        userPayload.username.use(() =>
+          expect(results[0].modifiedCount).toBe(1)
+        );
         if (results.length > 1) {
-          userPayload.account.use(() => expect(results[1].modifiedCount).toBe(1));
+          userPayload.account.use(() =>
+            expect(results[1].modifiedCount).toBe(1)
+          );
         }
 
         await context.close();
