@@ -16,6 +16,8 @@ import {EmptyValue} from '../../source/package/EmptyValue';
 import {MongoBase} from '../../source/infrastructure/repositoryimpl/MongoBase';
 import {MongoGetCredentialByID} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByID';
 import {MongoGetCredentialByEmail} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByEmail';
+import {Optional} from '../../source/package/monad/Optional';
+import {MongoGetCredentialByNumber} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByNumber';
 
 describe('Use in-memory store in kernel repository', () => {
   const connectionManagerBuilder = new ConnectionManagerBuilder();
@@ -196,8 +198,54 @@ describe('Use MongoDB as a datastore of repository.', () => {
       }
     });
 
-    it.todo('should be able to get one Credential by accountNumber.');
-    it.todo('should be able to get one Credential by identityNumber.');
+    it('should be able to get one Credential by account / identity number.', async () => {
+      const repositoryRegistrator = new RepositoriesRegistrator()
+        .scope(Scope.Credential)
+        .addSpecification(new MongoGetCredentialByNumber());
+
+      const kernel = new Kernel(
+        repositoryRegistrator,
+        connectionManagerBuilder
+      );
+      const context = kernel.newContext();
+
+      try {
+        const tests = [
+          {
+            identity: Optional.none<string>(),
+            account: Optional.some('12390891028309218'),
+            isNonable: true,
+          },
+          {
+            identity: Optional.none<string>(),
+            account: DummyUser.mongoSpecTest[0].number.account,
+            isNonable: false,
+          },
+          {
+            identity: Optional.some(DummyUser.mongoSpecTest[1].number.identity),
+            account: Optional.none<string>(),
+            isNonable: false,
+          },
+          {
+            identity: Optional.some(DummyUser.mongoSpecTest[2].number.identity),
+            account: Optional.none<string>(),
+            isNonable: false,
+          },
+        ];
+
+        for (const test of tests) {
+          const credential = await context
+            .repositories()
+            .Credential.getOne(
+              new specs.GetByNumber(test.identity, test.account)
+            );
+
+          expect(credential.isNone).toBe(test.isNonable);
+        }
+      } finally {
+        await context.close();
+      }
+    });
   });
 
   describe('MongoDB Command Repository of Credential.', () => {
