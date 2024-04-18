@@ -15,14 +15,14 @@ export class Optional<T> {
     return new Optional<T>();
   }
 
-  private get isNull() {
+  public get isNone() {
     return this.value === null || this.value === undefined;
   }
 
   public use<TReturn>(
     func: (value: NonNullable<T>) => TReturn
   ): Optional<TReturn> {
-    if (this.isNull) {
+    if (this.isNone) {
       return Optional.none();
     }
 
@@ -31,10 +31,16 @@ export class Optional<T> {
   }
 
   public unwrap(defaultValue: T): T {
-    if (this.isNull) {
+    if (this.isNone) {
       return defaultValue;
     }
 
+    return this.value as T;
+  }
+
+  // unsafe unwrap, use it carefully.
+  public forceUnwrap(): T {
+    // TODO: throw new nullpointer exception.
     return this.value as T;
   }
 }
