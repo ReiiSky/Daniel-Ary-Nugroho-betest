@@ -4,6 +4,7 @@ import {MongoConfig} from '../../source/infrastructure/connection/MongoConfig';
 import {Technames} from '../../source/infrastructure/connection/Technames';
 import {Local} from '../../source/infrastructure/environment/Local';
 import {EmptyValue} from '../../source/package/EmptyValue';
+import {Optional} from '../../source/package/monad/Optional';
 
 describe('MongoDB create connection', () => {
   const local = new Local('./config/.env');
@@ -21,6 +22,7 @@ describe('MongoDB create connection', () => {
   it('should be able to connect and close with valid config.', async () => {
     const mongoConfig: MongoConfig = {
       url: mongoURL,
+      dbname: Optional.none(),
       password: mongoPassword,
     };
 
@@ -34,6 +36,7 @@ describe('MongoDB create connection', () => {
   it('should not be able to connect with invalid config.', () => {
     const mongoConfig: MongoConfig = {
       url: '',
+      dbname: Optional.none(),
       password: '',
     };
 
@@ -49,6 +52,7 @@ describe('Store Mongo connection to ConnectionManagerBuilder', () => {
   const mongoURL = local
     .getString('MONGO_URL')
     .unwrap(EmptyValue.DefaultString);
+
   const mongoPassword = local
     .getString('MONGO_PASSWORD')
     .unwrap(EmptyValue.DefaultString);
@@ -59,6 +63,7 @@ describe('Store Mongo connection to ConnectionManagerBuilder', () => {
 
   const mongoConfig: MongoConfig = {
     url: mongoURL,
+    dbname: Optional.none(),
     password: mongoPassword,
   };
 

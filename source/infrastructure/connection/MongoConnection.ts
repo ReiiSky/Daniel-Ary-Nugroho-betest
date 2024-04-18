@@ -1,11 +1,11 @@
 import {Connection} from './Connection';
 import {MongoConfig} from './MongoConfig';
-import {MongoClient, ServerApiVersion} from 'mongodb';
+import {Db, MongoClient, ServerApiVersion} from 'mongodb';
 import {Technames} from './Technames';
 
 export class MongoConnection extends Connection {
   private connected = false;
-  private client: MongoClient | undefined;
+  private _client: MongoClient | undefined;
 
   constructor(private readonly config: MongoConfig) {
     super(Technames.MONGO);
@@ -20,7 +20,7 @@ export class MongoConnection extends Connection {
       '<password>',
       this.config.password
     );
-    this.client = new MongoClient(completeURI, {
+    this._client = new MongoClient(completeURI, {
       serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -28,16 +28,22 @@ export class MongoConnection extends Connection {
       },
     });
 
-    await this.client.connect();
+    await this._client.connect();
     await this.ping();
   }
 
   async close(): Promise<void> {
     await this.ping();
-    await this.client?.close(true);
+    await this._client?.close(true);
   }
 
   async ping() {
-    await this.client?.db('admin').command({ping: 1});
+    await this._client?.db('admin').command({ping: 1});
+  }
+
+  // TODO: use Optional to prevent null pointer exception,
+  // but is not necesarry. It will throw on connect before reach this func.
+  get db(): Db {
+    return (this._client as MongoClient).db(this.config.dbname.unwrap(''));
   }
 }
