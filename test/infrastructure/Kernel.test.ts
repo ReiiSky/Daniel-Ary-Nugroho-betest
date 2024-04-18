@@ -253,4 +253,6 @@ describe('Use MongoDB as a datastore of repository.', () => {
     it.todo('should be able the update credential.');
     it.todo('should be able the delete credential.');
   });
+
+  it.todo('should be able to listen to register domain event.');
 });
