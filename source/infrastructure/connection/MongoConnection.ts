@@ -1,11 +1,13 @@
 import {Connection} from './Connection';
 import {MongoConfig} from './MongoConfig';
-import {Db, MongoClient, ServerApiVersion} from 'mongodb';
+import {ClientSession, Db, MongoClient, ServerApiVersion} from 'mongodb';
 import {Technames} from './Technames';
 
 export class MongoConnection extends Connection {
   private connected = false;
   private _client: MongoClient | undefined;
+  private _session: ClientSession | undefined;
+  private isAborted = false;
 
   constructor(private readonly config: MongoConfig) {
     super(Technames.MONGO);
@@ -28,16 +30,35 @@ export class MongoConnection extends Connection {
       },
     });
 
+    // TODO: Catch mongo connection error,
+    // convert it to NonRecoverableError,
+    // such as ConnectError.
     await this._client.connect();
     await this.ping();
+    await this.begin();
+  }
+
+  private async begin() {
+    this._session = this._client?.startSession();
+    this._session?.startTransaction();
   }
 
   async close(): Promise<void> {
+    if (!this.isAborted) {
+      await this._session?.commitTransaction();
+    }
+
     await this.ping();
+    await this._session?.endSession();
     await this._client?.close(true);
   }
 
-  async ping() {
+  async abort() {
+    await this._session?.abortTransaction();
+    this.isAborted = true;
+  }
+
+  private async ping() {
     await this._client?.db('admin').command({ping: 1});
   }
 
@@ -45,5 +66,9 @@ export class MongoConnection extends Connection {
   // but is not necesarry. It will throw on connect before reach this func.
   get db(): Db {
     return (this._client as MongoClient).db(this.config.dbname.unwrap(''));
+  }
+
+  get session(): ClientSession {
+    return this._session as ClientSession;
   }
 }
