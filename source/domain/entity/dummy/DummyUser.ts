@@ -29,6 +29,8 @@ export abstract class DummyUser {
     },
   ];
 
+  // TODO: should not call any external technology inside domain,
+  // in this case is mongo.
   public static mongoSpecTest = [
     {
       identifier: '6620b6e8d2e041357855e051',
@@ -77,6 +79,19 @@ export abstract class DummyUser {
         identity: '3175068952978211',
         account: Optional.some('92148072887'),
       },
+    },
+  ];
+
+  public static mongoUpdateTest = [
+    {
+      identifier: '6620b6e8d2e041357855e05f',
+      username: Optional.some('second-user-two'),
+      account: Optional.none<string>(),
+    },
+    {
+      identifier: '6620b6ae60d8f2a1b5836048',
+      username: Optional.none<string>(),
+      account: Optional.some('92146510254'),
     },
   ];
 }

@@ -19,6 +19,7 @@ import {MongoGetCredentialByEmail} from '../../source/infrastructure/repositoryi
 import {Optional} from '../../source/package/monad/Optional';
 import {MongoGetCredentialByNumber} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByNumber';
 import {MongoRegisterCredential} from '../../source/infrastructure/repositoryimpl/MongoRegisterCredential';
+import {MongoUpdateCredential} from '../../source/infrastructure/repositoryimpl/MongoUpdateCredential';
 
 describe('Use in-memory store in kernel repository', () => {
   const connectionManagerBuilder = new ConnectionManagerBuilder();
@@ -275,7 +276,44 @@ describe('Use MongoDB as a datastore of repository.', () => {
       }
     });
 
-    it.todo('should be able the update credential.');
+    it('should be able the update credential.', async () => {
+      const repositoryRegistrator = new RepositoriesRegistrator()
+        .scope(Scope.Credential)
+        .addSpecification(new MongoGetCredentialByID())
+        .addEvent(new MongoUpdateCredential());
+
+      const kernel = new Kernel(
+        repositoryRegistrator,
+        connectionManagerBuilder
+      );
+      for (const userPayload of DummyUser.mongoUpdateTest) {
+        const context = kernel.newContext();
+        const row = await context
+          .repositories()
+          .Credential.getOne(new specs.GetByIDStr(userPayload.identifier));
+        expect(row.forceUnwrap()).not.toBeNull();
+
+        const credential = row.forceUnwrap() as Credential;
+
+        let updatedCount = 1;
+        userPayload.username.use(name => {
+          updatedCount++;
+          return credential.updateUsername(name);
+        });
+        credential.updateAccountNumber(userPayload.account);
+
+        const results = await context.repositories().save(credential);
+        expect(results.length).toBe(updatedCount);
+
+        userPayload.username.use(() => expect(results[0].modifiedCount).toBe(1));
+        if (results.length > 1) {
+          userPayload.account.use(() => expect(results[1].modifiedCount).toBe(1));
+        }
+
+        await context.close();
+      }
+    });
+
     it.todo('should be able the delete credential.');
   });
 
