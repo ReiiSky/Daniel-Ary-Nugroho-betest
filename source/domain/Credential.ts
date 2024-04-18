@@ -4,6 +4,7 @@ import {Aggregate} from './context/Aggregate';
 import {User} from './entity/User';
 import {UserPayload} from './entity/UserPayload';
 import * as events from './event';
+import {InformationNumber} from './object/InfomationNumber';
 
 export class Credential extends Aggregate {
   private root: User;
@@ -88,5 +89,20 @@ export class Credential extends Aggregate {
     }
 
     this.addEvent(new events.DeleteUserCredential(this.root.ID));
+  }
+
+  public out<T>(fn: (payload: UserPayload) => T): T {
+    return fn({
+      email: this.root.email.value,
+      username: this.root.username.value,
+      number: {
+        identity: this.root.identityNumber.number,
+        account: Optional.some(
+          this.root.accountNumber.unwrap(
+            InformationNumber.new(EmptyValue.DefaultString)
+          ).number
+        ),
+      },
+    });
   }
 }

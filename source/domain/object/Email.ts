@@ -24,4 +24,8 @@ export class Email {
 
     return result.value;
   }
+
+  public clone() {
+    return new Email(this.value);
+  }
 }

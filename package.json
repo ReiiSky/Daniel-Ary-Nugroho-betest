@@ -20,6 +20,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^29.5.12",
     "@types/joi": "^17.2.3",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/mongodb": "^4.0.7",
     "@types/node": "^20.4.5",
     "gts": "^5.0.0",
@@ -40,9 +41,10 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "joi": "^17.12.3",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.5.0"
   },
-  "engines":{
+  "engines": {
     "node": ">=12.9.0"
   }
 }

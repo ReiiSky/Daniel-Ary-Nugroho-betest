@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import {AuthPayload} from '../AuthPayload';
+import {AuthPayload} from '../../application/AuthPayload';
 import {Optional} from '../../package/monad/Optional';
 import {InvalidValueOfJwt} from '../InvalidValueOfJwt';
 

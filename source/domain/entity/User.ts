@@ -40,12 +40,20 @@ export class User extends Entity<string> {
     return this._email.value === other;
   }
 
+  public get email() {
+    return this._email.clone();
+  }
+
   public get username() {
     return this._username.clone();
   }
 
   public putUsername(newUsername: string) {
     this._username = this._username.change(newUsername);
+  }
+
+  public get identityNumber() {
+    return this._identityNumber.clone();
   }
 
   public get accountNumber() {

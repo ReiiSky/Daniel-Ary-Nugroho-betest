@@ -1,5 +1,5 @@
 import {Local} from '../../source/infrastructure/environment/Local';
-import {AuthPayload} from '../../source/interface/AuthPayload';
+import {AuthPayload} from '../../source/application/AuthPayload';
 import {IAuthorizer} from '../../source/interface/IAuthorizer';
 import {Jwt} from '../../source/interface/authorizer/Jwt';
 
