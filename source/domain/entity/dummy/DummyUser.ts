@@ -1,4 +1,4 @@
-import {Optional} from '../../../source/package/monad/Optional';
+import {Optional} from '../../../package/monad/Optional';
 
 export abstract class DummyUser {
   public static invariantConstructTest = [

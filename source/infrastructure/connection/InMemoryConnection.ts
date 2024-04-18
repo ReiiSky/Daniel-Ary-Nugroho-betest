@@ -1,4 +1,4 @@
-import {DummyUser} from '../../../test/domain/entity/DummyUser';
+import {DummyUser} from '../../domain/entity/dummy/DummyUser';
 import {Connection} from './Connection';
 import {Technames} from './Technames';
 

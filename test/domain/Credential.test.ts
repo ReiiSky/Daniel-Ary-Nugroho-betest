@@ -5,7 +5,7 @@ import {InformationNumber} from '../../source/domain/object/InfomationNumber';
 import {Username} from '../../source/domain/object/Username';
 import {EmptyValue} from '../../source/package/EmptyValue';
 import {Optional} from '../../source/package/monad/Optional';
-import {DummyUser} from './entity/DummyUser';
+import {DummyUser} from '../../source/domain/entity/dummy/DummyUser';
 
 test('Credential should be able to register one user.', () => {
   for (const {userPayload, throwable} of DummyUser.invariantConstructTest) {
