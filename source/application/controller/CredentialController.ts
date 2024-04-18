@@ -54,4 +54,76 @@ export class CredentialController {
 
     return output;
   }
+
+  public async register(context: IContext, req: RequestForm) {
+    // TODO: add validation on body parse.
+    const body = JSON.parse(Optional.auto(req.Body).unwrap('{}'));
+
+    // TODO: don't use other function in controller to check the logic.
+    // use repository find instead.
+    const isExist = await this.getByEmail(context, {
+      Query: {
+        email: body.email,
+      },
+    });
+    if (isExist) return false;
+
+    body.number.account = Optional.some<string>(body.number.account);
+    const repo = context.repositories();
+    const credential = Credential.newEmpty();
+    credential.register(body);
+
+    await repo.save(credential);
+
+    return true;
+  }
+
+  public async update(context: IContext, req: RequestForm) {
+    const id = Optional.auto(req.Auth?.id).unwrap('');
+
+    const credRepo = context.repositories().Credential;
+    const row = await credRepo.getOne(new GetByIDStr(id));
+
+    if (row.isNone) {
+      return;
+    }
+
+    const credential = row.forceUnwrap() as Credential;
+
+    // TODO: add validation on body parse.
+    const body = JSON.parse(Optional.auto(req.Body).unwrap('{}'));
+
+    Optional.auto<string>(body.username).
+      use(name => credential.updateUsername(name));
+
+    const account = Optional.auto<string>(body.account);
+
+    if (!account.isNone) {
+      credential.updateAccountNumber(account);
+    }
+
+    const repo = context.repositories();
+    await repo.save(credential);
+
+    return true;
+  }
+
+  public async delete(context: IContext, req: RequestForm) {
+    const id = Optional.auto(req.Auth?.id).unwrap('');
+
+    const credRepo = context.repositories().Credential;
+    const row = await credRepo.getOne(new GetByIDStr(id));
+
+    if (row.isNone) {
+      return;
+    }
+
+    const credential = row.forceUnwrap() as Credential;
+    credential.delete();
+
+    const repo = context.repositories();
+    await repo.save(credential);
+
+    return true;
+  }
 }

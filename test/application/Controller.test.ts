@@ -14,6 +14,10 @@ import {RepositoriesRegistrator} from '../../source/infrastructure/RepositoriesR
 import {Scope} from '../../source/domain/Scope';
 import {MongoGetCredentialByEmail} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByEmail';
 import {MongoGetCredentialByNumber} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByNumber';
+import { MongoRegisterCredential } from '../../source/infrastructure/repositoryimpl/MongoRegisterCredential';
+import { RequestForm } from '../../source/application/RequestForm';
+import { MongoUpdateCredential } from '../../source/infrastructure/repositoryimpl/MongoUpdateCredential';
+import { MongoDeleteCredential } from '../../source/infrastructure/repositoryimpl/MongoDeleteCredential';
 
 describe('Run controller credential', () => {
   const local = new Local('./config/.env');
@@ -84,7 +88,10 @@ describe('Run controller credential', () => {
     .scope(Scope.Credential)
     .addSpecification(new MongoGetCredentialByID())
     .addSpecification(new MongoGetCredentialByEmail())
-    .addSpecification(new MongoGetCredentialByNumber());
+    .addSpecification(new MongoGetCredentialByNumber())
+    .addEvent(new MongoRegisterCredential())
+    .addEvent(new MongoUpdateCredential())
+    .addEvent(new MongoDeleteCredential());
 
   const kernel = new Kernel(repositoryRegistrator, connectionManagerBuilder);
   const c = new CredentialController();
@@ -124,5 +131,49 @@ describe('Run controller credential', () => {
     expect(output).not.toBeUndefined();
     expect(output?.number.identity).toBe(current.number.identity);
     expect(output?.number.account).toBe(current.number.account.forceUnwrap());
+  });
+
+  it('should be able to register data.', async () => {
+    const current = DummyUser.mongoWriteTest[0];
+    const request = {
+      Query: {},
+      Body: JSON.stringify({
+        identifier: current.identifier,
+        username: current.username,
+        email: current.email,
+        number: {
+          identity: current.number.identity,
+          account: current.number.account.forceUnwrap(),
+        },
+      }),
+    };
+
+    const success = await c.register(kernel.newContext(), request);
+    expect(success).toBe(true);
+  });
+
+  it('should be able to update data username.', async () => {
+    const current = DummyUser.mongoUpdateTest[0];
+    const request: RequestForm = {
+      Auth: {id: current.identifier},
+      Query: {},
+      Body: JSON.stringify({
+        username: current.username.forceUnwrap(),
+      }),
+    };
+
+    const success = await c.update(kernel.newContext(), request);
+    expect(success).toBe(true);
+  });
+
+  it('should be able to delete credential.', async () => {
+    const current = DummyUser.mongoDeleteTest[0];
+    const request: RequestForm = {
+      Auth: {id: current.identifier.unwrap('')},
+      Query: {}
+    };
+
+    const success = await c.delete(kernel.newContext(), request);
+    expect(success).toBe(true);
   });
 });
