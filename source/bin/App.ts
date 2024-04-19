@@ -14,7 +14,7 @@ import {IKernel} from '../interface/IKernel';
 import {EmptyValue} from '../package/EmptyValue';
 
 export class App {
-  public static readonly local = new Local('./config/.env');
+  public static readonly local = new Local('/etc/secrets/.env');
 
   setupKernel(): IKernel {
     const mongoURL = App.local

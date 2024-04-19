@@ -44,7 +44,8 @@ export class ExpressSetup {
   }
 
   run() {
-    const PORT = App.local.getNumber('PORT').unwrap(8000);
+    // const PORT = App.local.getNumber('PORT').unwrap(8000);
+    const PORT = process.env.PORT || 8000;
 
     this.app.listen(PORT, () => {
       console.log('listening on port: ' + PORT);
