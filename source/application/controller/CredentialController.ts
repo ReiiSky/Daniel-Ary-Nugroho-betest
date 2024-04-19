@@ -75,6 +75,8 @@ export class CredentialController {
     });
     if (isExist) return false;
 
+    // TODO: should not use new for constructing aggregate
+    // outside infrastructure.
     const repo = context.repositories();
     const credential = Credential.newEmpty();
     credential.register({
