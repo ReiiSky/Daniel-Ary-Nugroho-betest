@@ -3,7 +3,9 @@ import {ConnectionManagerBuilder} from '../infrastructure/ConnectionManagerBuild
 import {Kernel} from '../infrastructure/Kernel';
 import {RepositoriesRegistrator} from '../infrastructure/RepositoriesRegistrator';
 import {MongoBuilder} from '../infrastructure/connection/MongoBuilder';
+import {RedisBuilder} from '../infrastructure/connection/RedisBuilder';
 import {Local} from '../infrastructure/environment/Local';
+import {DecoratorRedisGetCredential} from '../infrastructure/repositoryimpl/DecoratorRedisGetCredential';
 import {MongoDeleteCredential} from '../infrastructure/repositoryimpl/MongoDeleteCredential';
 import {MongoGetCredentialByEmail} from '../infrastructure/repositoryimpl/MongoGetCredentialByEmail';
 import {MongoGetCredentialByID} from '../infrastructure/repositoryimpl/MongoGetCredentialByID';
@@ -35,9 +37,27 @@ export class App {
       })
     );
 
+    const redisURL = App.local
+      .getString('REDIS_URL')
+      .unwrap(EmptyValue.DefaultString);
+
+    const redisPassword = App.local
+      .getString('REDIS_PASSWORD')
+      .unwrap(EmptyValue.DefaultString);
+
+    connectionManagerBuilder.add(
+      new RedisBuilder({
+        url: redisURL,
+        password: redisPassword,
+        ttl: 300,
+      })
+    );
+
     const repositoryRegistrator = new RepositoriesRegistrator()
       .scope(Scope.Credential)
-      .addSpecification(new MongoGetCredentialByID())
+      .addSpecification(
+        new DecoratorRedisGetCredential(new MongoGetCredentialByID())
+      )
       .addSpecification(new MongoGetCredentialByEmail())
       .addSpecification(new MongoGetCredentialByNumber())
       .addEvent(new MongoRegisterCredential())
