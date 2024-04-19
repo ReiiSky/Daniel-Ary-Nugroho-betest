@@ -14,10 +14,10 @@ import {RepositoriesRegistrator} from '../../source/infrastructure/RepositoriesR
 import {Scope} from '../../source/domain/Scope';
 import {MongoGetCredentialByEmail} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByEmail';
 import {MongoGetCredentialByNumber} from '../../source/infrastructure/repositoryimpl/MongoGetCredentialByNumber';
-import { MongoRegisterCredential } from '../../source/infrastructure/repositoryimpl/MongoRegisterCredential';
-import { RequestForm } from '../../source/application/RequestForm';
-import { MongoUpdateCredential } from '../../source/infrastructure/repositoryimpl/MongoUpdateCredential';
-import { MongoDeleteCredential } from '../../source/infrastructure/repositoryimpl/MongoDeleteCredential';
+import {MongoRegisterCredential} from '../../source/infrastructure/repositoryimpl/MongoRegisterCredential';
+import {RequestForm} from '../../source/application/RequestForm';
+import {MongoUpdateCredential} from '../../source/infrastructure/repositoryimpl/MongoUpdateCredential';
+import {MongoDeleteCredential} from '../../source/infrastructure/repositoryimpl/MongoDeleteCredential';
 
 describe('Run controller credential', () => {
   const local = new Local('./config/.env');
@@ -170,7 +170,7 @@ describe('Run controller credential', () => {
     const current = DummyUser.mongoDeleteTest[0];
     const request: RequestForm = {
       Auth: {id: current.identifier.unwrap('')},
-      Query: {}
+      Query: {},
     };
 
     const success = await c.delete(kernel.newContext(), request);

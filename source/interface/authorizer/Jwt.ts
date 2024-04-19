@@ -11,8 +11,7 @@ export class Jwt {
       const decoded = jwt.verify(crypted, this.key, {complete: true});
 
       // TODO: apply validate here please.
-      const payload = JSON.parse(decoded.payload.toString());
-      return [Optional.some(payload), Optional.none()];
+      return [Optional.some(decoded.payload as AuthPayload), Optional.none()];
     } catch (error) {
       return [Optional.none(), Optional.some(new InvalidValueOfJwt(crypted))];
     }

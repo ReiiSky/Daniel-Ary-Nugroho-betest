@@ -91,8 +91,8 @@ export class Credential extends Aggregate {
     this.addEvent(new events.DeleteUserCredential(this.root.ID));
   }
 
-  public out<T>(fn: (payload: UserPayload) => T): T {
-    return fn({
+  public out<T>(fn: (id: string, payload: UserPayload) => T): T {
+    return fn(this.root.ID.id, {
       email: this.root.email.value,
       username: this.root.username.value,
       number: {

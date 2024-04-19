@@ -57,7 +57,14 @@ export class CredentialController {
 
   public async register(context: IContext, req: RequestForm) {
     // TODO: add validation on body parse.
-    const body = JSON.parse(Optional.auto(req.Body).unwrap('{}'));
+    const body = req.Body as unknown as {
+      email: string;
+      username: string;
+      number: {
+        identity: string;
+        account: string;
+      };
+    };
 
     // TODO: don't use other function in controller to check the logic.
     // use repository find instead.
@@ -68,10 +75,16 @@ export class CredentialController {
     });
     if (isExist) return false;
 
-    body.number.account = Optional.some<string>(body.number.account);
     const repo = context.repositories();
     const credential = Credential.newEmpty();
-    credential.register(body);
+    credential.register({
+      email: body.email,
+      username: body.username,
+      number: {
+        identity: body.number.identity,
+        account: Optional.some(body.number.account),
+      },
+    });
 
     await repo.save(credential);
 
@@ -91,12 +104,11 @@ export class CredentialController {
     const credential = row.forceUnwrap() as Credential;
 
     // TODO: add validation on body parse.
-    const body = JSON.parse(Optional.auto(req.Body).unwrap('{}'));
+    const body = req.Body as {username?: string; account?: string};
 
-    Optional.auto<string>(body.username).
-      use(name => credential.updateUsername(name));
+    Optional.auto(body.username).use(name => credential.updateUsername(name));
 
-    const account = Optional.auto<string>(body.account);
+    const account = Optional.auto(body.account);
 
     if (!account.isNone) {
       credential.updateAccountNumber(account);
