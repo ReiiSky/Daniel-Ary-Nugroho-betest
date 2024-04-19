@@ -7,6 +7,7 @@
   ],
   "keywords": [],
   "scripts": {
+    "start:server": "node -e \"require('./build/source/bin/Express.js').server.run()\"",
     "test": "npx jest",
     "lint": "gts lint",
     "clean": "gts clean",
